@@ -1,0 +1,42 @@
+<h1>My Card</h1>
+
+<div id="card">
+{{#if courses.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Quantity</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      {{#each courses}}
+      <tr>
+        <td>{{title}}</td>
+        <td>{{count}}</td>
+        <td>
+          <button 
+            class="btn btm-small js-remove" 
+            data-id="{{_id}}"
+            data-csrf="{{@root.csrfToken}}"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <p><strong>Total price:</strong> <span class="price">{{price}}</span></p>
+
+  <form action="/orders" method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button type="submit" class="btn">Place Order</button>
+  </form>
+{{else}}
+  <p>Card empty</p>
+{{/if}}
+</div>
