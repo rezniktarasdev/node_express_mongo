@@ -12,7 +12,9 @@ const coursesRoutes = require('./routes/courses')
 const ordersRoutes = require('./routes/orders')
 const authRoutes = require('./routes/auth')
 const varMiddleware = require('./middleware/variables')
-const MONGODB_URI = `mongodb+srv://109premium109:YkTabsZr0ac3vUSE@cluster0.en7nsnb.mongodb.net/shop`
+const userMiddleware = require('./middleware/user')
+const PORT = process.env.PORT || 3000
+const keys = require('./keys')
 const app = express()
 
 const hbs = exphbs.create({
@@ -25,7 +27,7 @@ const hbs = exphbs.create({
 })
 const store = new MongoStore({
   collection: 'sessions',
-  uri: MONGODB_URI
+  uri: keys.MONGODB_URI
 })
 
 app.engine('hbs', hbs.engine)
@@ -35,13 +37,15 @@ app.set('views', 'views')
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({extended: true}))
 app.use(session({
-  secret: 'some secret value',
+  secret: keys.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store
 }))
+
 app.use(flash());
 app.use(varMiddleware)
+app.use(userMiddleware)
 
 app.use('/', homeRoutes)
 app.use('/add', addRoutes)
@@ -50,11 +54,11 @@ app.use('/card', cardRoutes)
 app.use('/orders', ordersRoutes)
 app.use('/auth', authRoutes)
 
-const PORT = process.env.PORT || 3000
+
 
 async function start() {
   try {
-    await mongoose.connect(MONGODB_URI)
+    await mongoose.connect(keys.MONGODB_URI)
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`)
