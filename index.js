@@ -11,6 +11,7 @@ const addRoutes = require('./routes/add')
 const coursesRoutes = require('./routes/courses')
 const ordersRoutes = require('./routes/orders')
 const authRoutes = require('./routes/auth')
+const resetRoutes = require('./routes/auth')
 const varMiddleware = require('./middleware/variables')
 const userMiddleware = require('./middleware/user')
 const PORT = process.env.PORT || 3000
@@ -23,7 +24,8 @@ const hbs = exphbs.create({
   runtimeOptions: {
     allowProtoPropertiesByDefault: true,
     allowProtoMethodsByDefault: true
-  }
+  },
+  helpers: require('./utils/hbs-helpers')
 })
 const store = new MongoStore({
   collection: 'sessions',
