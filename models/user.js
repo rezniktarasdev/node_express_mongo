@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose')
+const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema({
     email: {
@@ -8,7 +8,7 @@ const userSchema = new Schema({
     name: String,
     password: {
         type: String,
-        requried: true
+        required: true
     },
     avatarUrl: String,
     resetToken: String,
@@ -25,52 +25,49 @@ const userSchema = new Schema({
                     type: Schema.Types.ObjectId,
                     ref: 'Course',
                     required: true
-                }
+                },
+            },
+        ],
+    },
+});
 
-            }
-        ]
-    }
-})
+userSchema.methods.addToCart = function (course) {
+    const clonedItems = [...this.cart.items];
+    const idx = clonedItems.findIndex(c => c.courseId.toString() === course._id.toString());
 
-userSchema.methods.addToCart = function(course) {
-    const clonedItems = [...this.cart.items]
-    const idx = clonedItems.findIndex(c => {
-        return c.courseId.toString() === course._id.toString()
-    })
-
-    if (idx >= 0 ) {
-        clonedItems[idx].count += 1
+    if (idx >= 0) {
+        clonedItems[idx].count += 1;
     } else {
         clonedItems.push({
             courseId: course._id,
             count: 1
-        })
+        });
     }
 
-    this.cart = {items: clonedItems}
+    this.cart = { items: clonedItems };
 
-    return this.save()
-}
+    return this.save();
+};
 
-userSchema.methods.removeFromCart = function(id) {
-    let clonedItems = [...this.cart.items]
-    const idx = clonedItems.findIndex(c => c.courseId.toString() === id.toString())
+userSchema.methods.removeFromCart = function (id) {
+    let clonedItems = [...this.cart.items];
+    const idx = clonedItems.findIndex(c => c.courseId.toString() === id.toString());
 
     if (clonedItems[idx].count === 1) {
-        clonedItems = clonedItems.filter(c => c.courseId.toString() !== id.toString())
+        clonedItems = clonedItems.filter(c => c.courseId.toString() !== id.toString());
     } else {
-        clonedItems[idx].count--
+        clonedItems[idx].count--;
     }
 
-    this.cart = {items: clonedItems}
+    this.cart = { items: clonedItems };
 
-    return this.save()
-}
+    return this.save();
+};
 
-userSchema.methods.clearCart = function() {
-    this.cart = {items: []}
-    
-    return this.save()
-}
+userSchema.methods.clearCart = function () {
+    this.cart = { items: [] };
 
-module.exports = model('User', userSchema )
+    return this.save();
+};
+
+module.exports = model('User', userSchema);

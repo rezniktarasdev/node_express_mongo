@@ -1,7 +1,7 @@
-const {Router} = require('express')
-const Order = require('../models/order')
-const auth = require('../middleware/auth')
-const router = Router()
+const { Router } = require('express');
+const Order = require('../models/order');
+const auth = require('../middleware/auth');
+const router = Router();
 
 router.get('/', auth, async (req, res) => {
     try {
@@ -11,30 +11,26 @@ router.get('/', auth, async (req, res) => {
         res.render('orders', {
             isOrder: true,
             title: 'Orders',
-            orders: orders.map(o => {
-                return {
-                    ...o._doc,
-                    price: o.courses.reduce((total, c) => {
-                        return total += c.count * c.course.price;
-                    }, 0)
-                };
-            })
+            orders: orders.map(o => ({
+                ...o._doc,
+                price: o.courses.reduce((total, c) => {
+                    return total += c.count * c.course.price;
+                }, 0)
+            }))
         });
     } catch (e) {
         console.log(e);
     }
 });
 
-
 router.post('/', auth, async (req, res) => {
     try {
-        const user = await req.user
-            .populate('cart.items.courseId')
+        const user = await req.user.populate('cart.items.courseId');
 
         const courses = user.cart.items.map(i => ({
             count: i.count,
-            course: {...i.courseId._doc}
-        }))
+            course: { ...i.courseId._doc }
+        }));
 
         const order = new Order({
             user: {
@@ -42,15 +38,15 @@ router.post('/', auth, async (req, res) => {
                 userId: req.user
             },
             courses: courses
-        })
+        });
 
-        await order.save()
-        await req.user.clearCart()
+        await order.save();
+        await req.user.clearCart();
 
-        res.redirect('/orders')
+        res.redirect('/orders');
     } catch (e) {
-        console.log(e)
+        console.log(e);
     }
-})
+});
 
-module.exports = router
+module.exports = router;

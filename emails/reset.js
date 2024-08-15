@@ -1,6 +1,6 @@
-const keys = require('../keys')
+const keys = require('../keys');
 
-module.exports = function(email, token) {
+module.exports = function (email, token) {
     return {
         to: email,
         from: keys.EMAIL_FROM,
@@ -12,6 +12,7 @@ module.exports = function(email, token) {
             <p><a href="${keys.BASE_URL}/auth/password/${token}">Restore access</a></p>
             <hr />
             <a href="${keys.BASE_URL}">Course Shop</a>
-        `
-    }
-}
+        `,
+    };
+};
+
