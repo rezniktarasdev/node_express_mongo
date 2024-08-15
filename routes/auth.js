@@ -1,12 +1,14 @@
 const {Router} = require('express')
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
+const {validationResult} = require('express-validator')
 const User =  require('../models/user')
 const router = Router()
 const keys =  require('../keys/index')
 const nodemailer = require('nodemailer')
 const regEmail = require('../emails/registration')
 const resetEmail = require('../emails/reset')
+const {registerValidators, loginValidators} = require('../utils/validators')
 
 const transporter = nodemailer.createTransport({
     host: keys.BREVO_SMTP_SERVER,
@@ -17,6 +19,20 @@ const transporter = nodemailer.createTransport({
         pass: keys.BREVO_SMTP_KEY,
     },
 });
+
+const authenticateUser = async (email, password) => {
+    const candidate = await User.findOne({ email });
+    if (!candidate) {
+        throw new Error('This user does not exist');
+    }
+
+    const areSame = await bcrypt.compare(password, candidate.password);
+    if (!areSame) {
+        throw new Error('Invalid password');
+    }
+
+    return candidate;
+};
 
 
 router.get('/login', async (req, res) => {
@@ -34,45 +50,47 @@ router.get('/logout', async (req, res) => {
     })
 })
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginValidators, async (req, res) => {
     try {
-        const {email, password} = req.body
-        const candidate = await User.findOne({ email })
+        const { email, password } = req.body;
+        const errors = validationResult(req);
 
-        if (candidate) {
-        const areSame = await bcrypt.compare(password, candidate.password)
-
-        if (areSame) {
-            req.session.user = candidate
-            req.session.isAuthenticated = true
-            req.session.save(err => {
-            if (err) {
-                throw err
-            }
-            res.redirect('/')
-            })
-        } else {
-            req.flash('loginError', 'Invalid password')
-            res.redirect('/auth/login#login')
+        if (!errors.isEmpty()) {
+            req.flash('loginError', errors.array()[0].msg);
+            return res.status(422).redirect('/auth/login#login');
         }
-        } else {
-            req.flash('loginError', 'This user does not exist')
-            res.redirect('/auth/login#login')
+
+        try {
+            const user = await authenticateUser(email, password);
+
+            req.session.user = user;
+            req.session.isAuthenticated = true;
+            req.session.save((err) => {
+                if (err) {
+                    throw err;
+                }
+                res.redirect('/');
+            });
+        } catch (error) {
+            req.flash('loginError', error.message);
+            res.redirect('/auth/login#login');
         }
     } catch (e) {
-        console.log(e)
+        console.error(e);
+        res.redirect('/auth/login#login'); // Додатково можна додати редирект або відображення помилки користувачеві
     }
-})
+});
 
-router.post('/register', async (req, res) => {
+router.post('/register', registerValidators, async (req, res) => {
     try {
-        const { email, password, repeat, name } = req.body;
-        const candidate = await User.findOne({ email });
+        const { email, password, name } = req.body;
+        const errors = validationResult(req)
 
-        if (candidate) {
-            req.flash('registerError', 'A user with this email already exists');
-            return res.redirect('/auth/login#register');
-        } 
+        if (!errors.isEmpty()) {
+            req.flash('registerError', errors.array()[0].msg)
+
+            return res.status(422).redirect('/auth/login#register')
+        }
 
         const hashPassword = await bcrypt.hash(password, 10);
         const user = new User({
