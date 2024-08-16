@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const compression = require('compression');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
@@ -51,6 +53,13 @@ app.use(session({
 
 app.use(fileMiddleware.single('avatar'));
 app.use(flash());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    xDownloadOptions: false,
+  }),
+);
+app.use(compression())
 app.use(varMiddleware);
 app.use(userMiddleware);
 
