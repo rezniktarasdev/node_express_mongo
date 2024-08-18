@@ -1,4 +1,4 @@
-const keys = require('../keys');
+const keys = require('../keys/index');
 
 module.exports = function (email) {
   return {
