@@ -1,9 +1,11 @@
 .nav-wrapper {
   padding: 0 2rem;
+  background-color: #4A90E2;
 }
 
 .price {
   font-size: 2rem;
+  color: #FF9F43; /* Новий колір: теплий помаранчевий */
 }
 
 .course {
@@ -15,26 +17,32 @@
 
 .course h1 {
   margin-bottom: 2rem;
+  color: #34495E;
 }
 
 .course img { 
   min-width: 600px;
   height: auto;
+  border-radius: 8px;
 }
 
 .course .price.big { 
   font-size: 2.5rem;
+  color: #FF9F43;
 }
 
 .card-action.action {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
 }
 
 .card {
   width: 80%;
+  background-color: #F5F7FA;
+  border: 1px solid #D1D8E0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .course-form {
@@ -50,12 +58,13 @@
   border-radius: 10px;
   text-align: center;
   margin-bottom: 1rem;
-  background: rgba(255, 0, 0, 0.3);
-  color: red;
+  background: rgba(240, 128, 128, 0.2);
+  color: #E74C3C;
 }
 
 .avatar {
   max-width: 300px;
   height: auto;
+  border-radius: 50%;
+  border: 3px solid #4A90E2;
 }
-
