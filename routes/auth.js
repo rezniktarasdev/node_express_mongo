@@ -102,8 +102,6 @@ router.post('/register', registerValidators, async (req, res) => {
         await user.save();
 
         try {
-            console.log(keys.BREVO_SMTP_LOGIN)
-            console.log(keys.BREVO_SMTP_KEY)
             await transporter.sendMail(regEmail(email));
             console.log('Message sent');
         } catch (error) {
