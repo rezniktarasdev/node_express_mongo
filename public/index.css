@@ -1,11 +1,17 @@
+body {
+  background-color: #ECF0F1;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
 .nav-wrapper {
   padding: 0 2rem;
-  background-color: #4A90E2;
+  background-color: #26a69a;
 }
 
 .price {
   font-size: 2rem;
-  color: #FF9F43; /* Новий колір: теплий помаранчевий */
+  color: #E67E22;
 }
 
 .course {
@@ -28,7 +34,7 @@
 
 .course .price.big { 
   font-size: 2.5rem;
-  color: #FF9F43;
+  color: #E67E22;
 }
 
 .card-action.action {
@@ -66,5 +72,5 @@
   max-width: 300px;
   height: auto;
   border-radius: 50%;
-  border: 3px solid #4A90E2;
+  border: 3px solid #26a69a;
 }
